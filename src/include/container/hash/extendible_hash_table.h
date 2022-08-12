@@ -84,6 +84,11 @@ class ExtendibleHashTable {
    */
   void VerifyIntegrity();
 
+  // 测试函数
+  void PrintDir();
+
+  void RemoveAllItem(Transaction *transaction, uint32_t bucket_idx);
+
  private:
   /**
    * Hash - simple helper to downcast MurmurHash's 64-bit hash to 32-bit
@@ -119,7 +124,11 @@ class ExtendibleHashTable {
    * @param dir_page a pointer to the hash table's directory page
    * @return the bucket page_id corresponding to the input key
    */
-  inline uint32_t KeyToPageId(KeyType key, HashTableDirectoryPage *dir_page);
+  inline page_id_t KeyToPageId(KeyType key, HashTableDirectoryPage *dir_page);
+
+  HashTableDirectoryPage *CreateDirectoryPage(page_id_t *bucket_page_id);
+
+  HASH_TABLE_BUCKET_TYPE *CreateBucketPage(page_id_t *bucket_page_id);
 
   /**
    * Fetches the directory page from the buffer pool manager.
@@ -160,6 +169,8 @@ class ExtendibleHashTable {
    * @param value the value that was removed
    */
   void Merge(Transaction *transaction, const KeyType &key, const ValueType &value);
+
+  bool ExtraMerge(Transaction *transaction, const KeyType &key, const ValueType &value);  // 额外的合并操作
 
   // member variables
   page_id_t directory_page_id_;

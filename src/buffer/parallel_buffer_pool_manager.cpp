@@ -33,8 +33,8 @@ ParallelBufferPoolManager::ParallelBufferPoolManager(size_t num_instances, size_
 
 // Update constructor to destruct all BufferPoolManagerInstances and deallocate any associated memory
 ParallelBufferPoolManager::~ParallelBufferPoolManager() {
-  for (size_t i = 0; i < m_managers_.size(); i++) {
-    delete m_managers_[i];
+  for (auto manager : m_managers_) {
+    delete manager;
   }
 }
 
@@ -45,8 +45,7 @@ size_t ParallelBufferPoolManager::GetPoolSize() {
 
 BufferPoolManager *ParallelBufferPoolManager::GetBufferPoolManager(page_id_t page_id) {
   // Get BufferPoolManager responsible for handling given page id. You can use this method in your other methods.
-  int instance_idx = page_id % m_managers_.size();
-  return m_managers_[instance_idx];
+  return m_managers_[page_id % m_managers_.size()];
 }
 
 Page *ParallelBufferPoolManager::FetchPgImp(page_id_t page_id) {

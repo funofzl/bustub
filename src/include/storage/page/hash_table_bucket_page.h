@@ -137,6 +137,28 @@ class HashTableBucketPage {
    */
   void PrintBucket();
 
+  /**
+   * @brief return size
+   * @return size_
+   */
+  size_t Size() { return BUCKET_ARRAY_SIZE; }
+
+  void Reset();
+
+  void SetUnreadable(uint32_t bucket_idx);
+
+  std::vector<MappingType> GetAllItem() {
+    uint32_t bucket_size = BUCKET_ARRAY_SIZE;
+    std::vector<MappingType> items;
+    items.reserve(bucket_size);
+    for (uint32_t i = 0; i < bucket_size; i++) {
+      if (IsReadable(i)) {
+        items.emplace_back(array_[i]);
+      }
+    }
+    return items;
+  }
+
  private:
   //  For more on BUCKET_ARRAY_SIZE see storage/page/hash_table_page_defs.h
   char occupied_[(BUCKET_ARRAY_SIZE - 1) / 8 + 1];

@@ -243,7 +243,7 @@ bool BufferPoolManagerInstance::UnpinPgImp(page_id_t page_id, bool is_dirty) {
   if (is_dirty) {
     unpinned_page->is_dirty_ = true;
   }
-  assert(unpinned_page->pin_count_ > 0);
+  //   assert(unpinned_page->pin_count_ > 0);
   unpinned_page->pin_count_--;
   if (unpinned_page->GetPinCount() == 0) {
     replacer_->Unpin(unpinned_fid);

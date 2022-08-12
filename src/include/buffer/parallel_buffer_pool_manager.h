@@ -2,7 +2,7 @@
  * @Author: lxk
  * @Date: 2022-08-03 21:13:14
  * @LastEditors: lxk
- * @LastEditTime: 2022-08-04 13:28:55
+ * @LastEditTime: 2022-08-06 21:14:19
  */
 //===----------------------------------------------------------------------===//
 //
@@ -101,7 +101,7 @@ class ParallelBufferPoolManager : public BufferPoolManager {
   // pool_size for every bmp
   size_t m_pool_size_;
   // new page starting index
-  int m_bmp_start_idx_;
+  size_t m_bmp_start_idx_;
   // bpm instances
   std::vector<BufferPoolManager *> m_managers_;
 };

@@ -100,7 +100,7 @@ class BPlusTree {
   template <typename N>
   void Redistribute(N *neighbor_node, N *node, int index);
 
-  bool AdjustRoot(BPlusTreePage *node);
+  bool AdjustRoot(BPlusTreePage *old_root_node);
 
   void UpdateRootPageId(int insert_record = 0);
 

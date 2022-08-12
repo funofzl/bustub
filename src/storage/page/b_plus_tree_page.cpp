@@ -33,7 +33,7 @@ void BPlusTreePage::IncreaseSize(int amount) {}
  * Helper methods to get/set max size (capacity) of the page
  */
 int BPlusTreePage::GetMaxSize() const { return 0; }
-void BPlusTreePage::SetMaxSize(int size) {}
+void BPlusTreePage::SetMaxSize(int max_size) {}
 
 /*
  * Helper method to get min page size
