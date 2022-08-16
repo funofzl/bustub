@@ -1,3 +1,9 @@
+/*
+ * @Author: lxk
+ * @Date: 2022-08-03 21:13:14
+ * @LastEditors: lxk
+ * @LastEditTime: 2022-08-13 21:45:38
+ */
 //===----------------------------------------------------------------------===//
 //
 //                         BusTub
@@ -53,12 +59,18 @@ class InsertExecutor : public AbstractExecutor {
    */
   bool Next([[maybe_unused]] Tuple *tuple, RID *rid) override;
 
+  void InsertTuple(Tuple *tuple);
+
   /** @return The output schema for the insert */
   const Schema *GetOutputSchema() override { return plan_->OutputSchema(); };
 
  private:
   /** The insert plan node to be executed*/
   const InsertPlanNode *plan_;
+  // table info
+  TableInfo *table_info_;
+  // child_executor
+  std::unique_ptr<AbstractExecutor> child_executor_;
 };
 
 }  // namespace bustub

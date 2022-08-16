@@ -1,3 +1,9 @@
+/*
+ * @Author: lxk
+ * @Date: 2022-08-03 21:13:14
+ * @LastEditors: lxk
+ * @LastEditTime: 2022-08-13 18:50:16
+ */
 //===----------------------------------------------------------------------===//
 //
 //                         BusTub
@@ -53,5 +59,7 @@ class LimitExecutor : public AbstractExecutor {
   const LimitPlanNode *plan_;
   /** The child executor from which tuples are obtained */
   std::unique_ptr<AbstractExecutor> child_executor_;
+  // counter
+  size_t count_;
 };
 }  // namespace bustub

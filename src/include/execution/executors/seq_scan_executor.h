@@ -1,3 +1,9 @@
+/*
+ * @Author: lxk
+ * @Date: 2022-08-03 21:13:14
+ * @LastEditors: lxk
+ * @LastEditTime: 2022-08-12 17:30:50
+ */
 //===----------------------------------------------------------------------===//
 //
 //                         BusTub
@@ -50,5 +56,9 @@ class SeqScanExecutor : public AbstractExecutor {
  private:
   /** The sequential scan plan node to be executed */
   const SeqScanPlanNode *plan_;
+  // table_infopointer
+  TableInfo *table_info_;
+  // table iterator
+  TableIterator iter_;
 };
 }  // namespace bustub

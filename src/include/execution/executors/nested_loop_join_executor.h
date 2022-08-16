@@ -1,3 +1,9 @@
+/*
+ * @Author: lxk
+ * @Date: 2022-08-03 21:13:14
+ * @LastEditors: lxk
+ * @LastEditTime: 2022-08-14 13:35:34
+ */
 //===----------------------------------------------------------------------===//
 //
 //                         BusTub
@@ -55,6 +61,14 @@ class NestedLoopJoinExecutor : public AbstractExecutor {
  private:
   /** The NestedLoopJoin plan node to be executed. */
   const NestedLoopJoinPlanNode *plan_;
+  // left child
+  std::unique_ptr<AbstractExecutor> left_executor_;
+  // right child
+  std::unique_ptr<AbstractExecutor> right_executor_;
+  // left table tuple
+  Tuple left_tuple_;
+  //
+  bool non_empty_ = false;
 };
 
 }  // namespace bustub
