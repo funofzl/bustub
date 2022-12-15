@@ -2,7 +2,7 @@
  * @Author: lxk
  * @Date: 2022-08-03 21:13:14
  * @LastEditors: lxk
- * @LastEditTime: 2022-08-14 09:41:44
+ * @LastEditTime: 2022-08-21 10:52:20
  */
 //===----------------------------------------------------------------------===//
 //
@@ -35,6 +35,8 @@ void UpdateExecutor::Init() {
 bool UpdateExecutor::Next([[maybe_unused]] Tuple *tuple, RID *rid) {
   std::vector<bustub::IndexInfo *> indexes = exec_ctx_->GetCatalog()->GetTableIndexes(table_info_->name_);
   Transaction *transaction = exec_ctx_->GetTransaction();
+  LockManager *lockmanager = exec_ctx_->GetLockManager();
+  Catalog *catalog = exec_ctx_->GetCatalog();
 
   child_executor_->Init();
   RID tmp_rid;
@@ -42,6 +44,12 @@ bool UpdateExecutor::Next([[maybe_unused]] Tuple *tuple, RID *rid) {
   Tuple new_tuple;
   try {
     while (child_executor_->Next(&tmp_tuple, &tmp_rid)) {
+      if (transaction->GetIsolationLevel() == IsolationLevel::REPEATABLE_READ) {
+        lockmanager->LockUpgrade(transaction, tmp_rid);  // 之前查询获取了读锁，现在需要将锁升级
+      } else {
+        lockmanager->LockExclusive(transaction, tmp_rid);  // 加上写锁
+      }
+
       new_tuple = GenerateUpdatedTuple(tmp_tuple);
       table_info_->table_->UpdateTuple(new_tuple, tmp_rid, exec_ctx_->GetTransaction());
       for (auto index : indexes) {
@@ -53,6 +61,11 @@ bool UpdateExecutor::Next([[maybe_unused]] Tuple *tuple, RID *rid) {
         Tuple index_new_tuple =
             new_tuple.KeyFromTuple(table_info_->schema_, index->key_schema_, index->index_->GetKeyAttrs());
         index->index_->InsertEntry(index_new_tuple, tmp_rid, transaction);
+
+        auto record =
+            IndexWriteRecord{tmp_rid, table_info_->oid_, WType::UPDATE, new_tuple, index->index_oid_, catalog};
+        record.old_tuple_ = tmp_tuple;  // only used in update executor.
+        transaction->AppendTableWriteRecord(record);
       }
     }
   } catch (Exception &e) {

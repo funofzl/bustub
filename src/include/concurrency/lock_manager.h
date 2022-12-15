@@ -37,11 +37,15 @@ class LockManager {
 
   class LockRequest {
    public:
-    LockRequest(txn_id_t txn_id, LockMode lock_mode) : txn_id_(txn_id), lock_mode_(lock_mode), granted_(false) {}
+    LockRequest(txn_id_t txn_id, LockMode lock_mode)
+        : txn_id_(txn_id), lock_mode_(lock_mode), granted_(false), aborted_(false) {}
+    LockRequest(txn_id_t txn_id, LockMode lock_mode, bool granted)
+        : txn_id_(txn_id), lock_mode_(lock_mode), granted_(granted), aborted_(false) {}
 
     txn_id_t txn_id_;
     LockMode lock_mode_;
     bool granted_;
+    bool aborted_;  // we need a flag to prevent from granting lock on this txn.
   };
 
   class LockRequestQueue {
@@ -103,6 +107,9 @@ class LockManager {
    * @return true if the unlock is successful, false otherwise
    */
   bool Unlock(Transaction *txn, const RID &rid);
+
+ private:
+  void GrantLock(const RID &rid);
 
  private:
   std::mutex latch_;

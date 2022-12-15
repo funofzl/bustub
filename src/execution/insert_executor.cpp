@@ -2,7 +2,7 @@
  * @Author: lxk
  * @Date: 2022-08-03 21:13:14
  * @LastEditors: lxk
- * @LastEditTime: 2022-08-14 09:40:55
+ * @LastEditTime: 2022-08-21 10:52:15
  */
 //===----------------------------------------------------------------------===//
 //
@@ -40,14 +40,23 @@ void InsertExecutor::Init() {
 
 void InsertExecutor::InsertTuple(Tuple *tuple) {
   Transaction *transaction = exec_ctx_->GetTransaction();
+  LockManager *lockmanager = exec_ctx_->GetLockManager();
+  Catalog *catalog = exec_ctx_->GetCatalog();
+
   RID rid;
   table_info_->table_->InsertTuple(*tuple, &rid, transaction);
+  // == Lock and we will does not unlock it until commit or abort.
+  lockmanager->LockExclusive(transaction, rid);
+
   // 3.  If there are indexes, insert into indexes
   std::vector<bustub::IndexInfo *> indexes = exec_ctx_->GetCatalog()->GetTableIndexes(table_info_->name_);
   for (auto index : indexes) {
     Tuple index_tmp_tuple = tuple->KeyFromTuple(table_info_->schema_, index->key_schema_, index->index_->GetKeyAttrs());
     // insertEntry(key, value, transaction) like hash_table.insert(key, value, trx)
     index->index_->InsertEntry(index_tmp_tuple, rid, transaction);
+    // == Add index write set.
+    transaction->AppendTableWriteRecord(
+        IndexWriteRecord{rid, table_info_->oid_, WType::INSERT, *tuple, index->index_oid_, catalog});
   }
 }
 
